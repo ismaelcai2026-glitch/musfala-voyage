@@ -83,18 +83,18 @@ function App() {
                     <span className="value">{p.numero_passeport}</span>
                   </div>
                   <div className="card-row">
-                    <span className="label">📋 Programme</span>
+                    <span className="label">📋 N° Voyage</span>
                     <span className="value">{p.numero_vol}</span>
                   </div>
 
                   <div className="flight-section">
                     <h3>✈️ Vols Aller</h3>
                     <div className="flight-leg">
-                      <span className="leg-label">Vol 1</span>
+                      <span className="leg-label">Aller 1</span>
                       <span className="leg-value">{p.vol_aller_1}</span>
                     </div>
                     <div className="flight-leg">
-                      <span className="leg-label">Vol 2</span>
+                      <span className="leg-label">Aller 2</span>
                       <span className="leg-value">{p.vol_aller_2}</span>
                     </div>
                   </div>
@@ -102,12 +102,12 @@ function App() {
                   <div className="flight-section">
                     <h3>🔙 Vols Retour</h3>
                     <div className="flight-leg">
-                      <span className="leg-label">Vol 1</span>
+                      <span className="leg-label">Retour 1</span>
                       <span className="leg-value">{p.vol_retour_1}</span>
                     </div>
                     {p.vol_retour_2 && (
                       <div className="flight-leg">
-                        <span className="leg-label">Vol 2</span>
+                        <span className="leg-label">Retour 2</span>
                         <span className="leg-value">{p.vol_retour_2}</span>
                       </div>
                     )}

@@ -28,7 +28,7 @@ def extract_vol_info(doc):
         # Vol number
         vol_match = re.search(r'VOL\s*(\d+)', upper)
         if vol_match and not vol_num:
-            vol_num = f"VOL {vol_match.group(1)}"
+            vol_num = f"VOYAGE {vol_match.group(1)}"
 
         # Detect section
         if 'ALLEZ' in upper or 'ALLER' in upper:
