@@ -212,48 +212,249 @@ body {
   font-size: 0.95rem;
 }
 
-/* Flight sections */
-.flight-section {
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 2px solid #e8f5e9;
+/* Trip summary */
+.trip-summary {
+  margin-top: 14px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #f7faf7, #eef5ef);
+  border: 1px solid #d6e7d8;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: #1f3a2c;
 }
 
-.flight-section h3 {
-  font-size: 0.95rem;
-  color: #2e7d32;
-  margin-bottom: 8px;
-  font-weight: 600;
+.trip-summary-line {
+  margin: 4px 0;
 }
 
-.flight-leg {
+.trip-summary-line strong {
+  color: #0f4c3a;
+}
+
+/* Trip blocks (Aller / Retour) */
+.trip-block {
+  margin-top: 18px;
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid transparent;
+}
+
+.aller-block {
+  background: linear-gradient(180deg, #eef9f1 0%, #f5fbf6 100%);
+  border-color: #c9e7d0;
+}
+
+.retour-block {
+  background: linear-gradient(180deg, #fdf6e8 0%, #fff9ee 100%);
+  border-color: #f0dba6;
+}
+
+.trip-block-title {
+  font-size: 1rem;
+  font-weight: 700;
   display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  padding: 8px 0;
-  border-bottom: 1px solid #f5f5f5;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  letter-spacing: 0.3px;
 }
 
-.flight-leg:last-child {
-  border-bottom: none;
+.aller-block .trip-block-title {
+  color: #0f4c3a;
 }
 
-.leg-label {
-  font-size: 0.8rem;
+.retour-block .trip-block-title {
+  color: #8a6d10;
+}
+
+.trip-icon {
+  font-size: 1.15rem;
+}
+
+/* Flight card (un par voyage Aller ou Retour, contenant toutes les étapes) */
+.flight-card {
+  background: white;
+  border-radius: 12px;
+  padding: 14px 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border-left: 4px solid #1a6b4f;
+}
+
+.flight-card.is-retour {
+  border-left-color: #d4a843;
+}
+
+/* Une étape (leg) à l'intérieur du flight-card */
+.flight-leg {
+  /* pas de margin/padding extérieurs : le flight-card en a déjà */
+}
+
+.flight-leg-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  font-size: 0.85rem;
+}
+
+.flight-step {
   font-weight: 600;
-  color: white;
-  background: #1a6b4f;
-  padding: 2px 10px;
-  border-radius: 10px;
-  white-space: nowrap;
-  min-width: 46px;
+  color: #444;
+  background: #f0f4f1;
+  padding: 3px 10px;
+  border-radius: 8px;
+}
+
+.is-retour .flight-step {
+  background: #fcf3df;
+}
+
+.flight-date {
+  font-weight: 700;
+  color: #0f4c3a;
+  background: #e8f5e9;
+  padding: 3px 10px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+}
+
+.is-retour .flight-date {
+  color: #8a6d10;
+  background: #fdf3d3;
+}
+
+.flight-route {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 10px;
+}
+
+.route-airport {
   text-align: center;
 }
 
-.leg-value {
-  font-size: 0.9rem;
-  color: #333;
-  line-height: 1.4;
+.route-code {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  letter-spacing: 1px;
+}
+
+.route-city {
+  font-size: 0.78rem;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 2px;
+}
+
+.route-time {
+  margin-top: 6px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #0f4c3a;
+}
+
+.is-retour .route-time {
+  color: #8a6d10;
+}
+
+.route-date {
+  margin-top: 2px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #6e7d70;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+}
+
+.is-retour .route-date {
+  color: #9b8348;
+}
+
+.route-arrow {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  min-height: 30px;
+}
+
+.route-arrow-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 2px;
+  background: linear-gradient(90deg, #1a6b4f, #1a6b4f 50%, transparent 50%, transparent);
+  background-size: 8px 2px;
+  background-repeat: repeat-x;
+  opacity: 0.4;
+}
+
+.is-retour .route-arrow-line {
+  background: linear-gradient(90deg, #d4a843, #d4a843 50%, transparent 50%, transparent);
+  background-size: 8px 2px;
+  background-repeat: repeat-x;
+  opacity: 0.5;
+}
+
+.route-arrow-icon {
+  position: relative;
+  background: white;
+  padding: 0 6px;
+  font-size: 1.3rem;
+  color: #1a6b4f;
+  font-weight: 700;
+}
+
+.is-retour .route-arrow-icon {
+  color: #d4a843;
+}
+
+.flight-meta {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px dashed #e8e8e8;
+  text-align: center;
+}
+
+.meta-tag {
+  font-size: 0.78rem;
+  color: #777;
+  font-style: italic;
+}
+
+/* Séparateur Escale entre étapes */
+.layover-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 16px 0;
+}
+
+.layover-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #c9d4cb, transparent);
+}
+
+.layover-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #5a6c5e;
+  background: #eef3ef;
+  padding: 4px 12px;
+  border-radius: 12px;
+  white-space: nowrap;
+}
+
+.is-retour .layover-label {
+  color: #8a6d10;
+  background: #fcf3df;
 }
 
 /* Footer */
@@ -284,8 +485,15 @@ body {
   .value {
     text-align: left;
   }
-  .flight-leg {
-    flex-direction: column;
+  .flight-route {
+    grid-template-columns: 1fr;
     gap: 4px;
+  }
+  .route-arrow {
+    transform: rotate(90deg);
+    margin: 6px 0;
+  }
+  .route-arrow-line {
+    display: none;
   }
 }
