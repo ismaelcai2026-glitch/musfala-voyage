@@ -5,3 +5,10 @@ node_modules/
 *.egg-info/
 extracted_logo.*
 logo.emf
+
+# Backups & previews
+*.bak
+*.bak-*
+preview-*.png
+.venv/
+.DS_Store

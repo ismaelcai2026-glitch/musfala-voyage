@@ -13,3 +13,4 @@ class Pelerin(SQLModel, table=True):
     vol_retour_2: str = ""
     statut: str = ""
     source_fichier: str | None = None
+    masque: bool = Field(default=False, index=True)

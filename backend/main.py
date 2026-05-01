@@ -35,8 +35,10 @@ def search_pelerin(passeport: str, session: Session = Depends(get_session)):
     if not passeport or len(passeport.strip()) < 2:
         raise HTTPException(status_code=400, detail="Numéro de passeport trop court")
 
+    # Exclut les pèlerins marqués comme masqués
     query = select(Pelerin).where(
-        Pelerin.numero_passeport.ilike(f"%{passeport.strip()}%")
+        Pelerin.numero_passeport.ilike(f"%{passeport.strip()}%"),
+        Pelerin.masque == False,  # noqa: E712 (SQLAlchemy boolean compare)
     )
     results = session.exec(query).all()
 
@@ -78,10 +80,17 @@ async def import_file(file: UploadFile = File(...), session: Session = Depends(g
 
 @app.get("/api/stats")
 def get_stats(session: Session = Depends(get_session)):
-    total = session.exec(select(Pelerin)).all()
-    vols = set(p.numero_vol for p in total if p.numero_vol)
+    # Compte uniquement les pèlerins visibles (non masqués)
+    visible = session.exec(
+        select(Pelerin).where(Pelerin.masque == False)  # noqa: E712
+    ).all()
+    masques_count = len(session.exec(
+        select(Pelerin).where(Pelerin.masque == True)  # noqa: E712
+    ).all())
+    vols = set(p.numero_vol for p in visible if p.numero_vol)
     return {
-        "total_pelerins": len(total),
+        "total_pelerins": len(visible),
+        "total_pelerins_masques": masques_count,
         "total_vols": len(vols),
         "vols": sorted(vols),
     }
