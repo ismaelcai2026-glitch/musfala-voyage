@@ -210,14 +210,19 @@ function TripSummary({ pelerin }) {
 }
 
 function App() {
-  const [passport, setPassport] = useState("");
+  const [query, setQuery] = useState("");
   const [results, setResults] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const handleSearch = async (e) => {
     e.preventDefault();
-    if (!passport.trim()) return;
+    const term = query.trim();
+    if (!term) return;
+    if (term.length < 2) {
+      setError("Saisissez au moins 2 caractères");
+      return;
+    }
 
     setLoading(true);
     setError("");
@@ -225,13 +230,16 @@ function App() {
 
     try {
       const res = await fetch(
-        `${API_URL}/api/search?passeport=${encodeURIComponent(passport.trim())}`
+        `${API_URL}/api/search?q=${encodeURIComponent(term)}`
       );
-      if (!res.ok) throw new Error("Erreur serveur");
+      if (!res.ok) {
+        const detail = await res.json().catch(() => ({}));
+        throw new Error(detail.detail || "Erreur serveur");
+      }
       const data = await res.json();
       setResults(data);
     } catch (err) {
-      setError("Erreur de connexion au serveur");
+      setError(err.message || "Erreur de connexion au serveur");
     } finally {
       setLoading(false);
     }
@@ -253,9 +261,9 @@ function App() {
         <form onSubmit={handleSearch} className="search-form">
           <input
             type="text"
-            value={passport}
-            onChange={(e) => setPassport(e.target.value)}
-            placeholder="Entrez votre numéro de passeport..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="N° de passeport, nom ou prénom du pèlerin..."
             className="search-input"
             autoFocus
           />
@@ -269,14 +277,21 @@ function App() {
         {results && results.count === 0 && (
           <div className="no-results">
             <span className="no-results-icon">😕</span>
-            <p>Aucun pèlerin trouvé pour ce numéro de passeport.</p>
-            <p className="hint">Vérifiez le numéro et réessayez.</p>
+            <p>Aucun pèlerin trouvé pour cette recherche.</p>
+            <p className="hint">Vérifiez le numéro de passeport, nom ou prénom et réessayez.</p>
           </div>
         )}
 
         {results && results.count > 0 && (
           <div className="results">
-            <h2>✅ {results.count} résultat{results.count > 1 ? "s" : ""} trouvé{results.count > 1 ? "s" : ""}</h2>
+            <h2>
+              ✅ {results.count} résultat{results.count > 1 ? "s" : ""} trouvé{results.count > 1 ? "s" : ""}
+              {results.truncated && (
+                <span className="truncated-note">
+                  {" "}(limité aux {results.max_results} premiers — affinez votre recherche)
+                </span>
+              )}
+            </h2>
             {results.results.map((p, i) => (
               <div key={i} className="card">
                 <div className="card-header">

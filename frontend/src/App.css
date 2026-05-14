@@ -155,6 +155,13 @@ body {
   font-size: 1.1rem;
 }
 
+.truncated-note {
+  font-size: 0.82rem;
+  font-weight: 400;
+  opacity: 0.8;
+  font-style: italic;
+}
+
 .card {
   background: rgba(255, 255, 255, 0.97);
   border-radius: 16px;

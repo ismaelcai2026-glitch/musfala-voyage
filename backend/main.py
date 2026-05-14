@@ -3,12 +3,16 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from sqlmodel import Session, select
+from sqlalchemy import or_
 from contextlib import asynccontextmanager
+from typing import Optional
 from models import Pelerin
 from database import init_db, get_session
 from import_word import import_docx
 import tempfile
 import os
+
+MAX_RESULTS = 100  # plafond pour éviter de retourner toute la base sur une recherche courte
 
 FRONTEND_DIR = os.path.join(os.path.dirname(__file__), "..", "frontend", "build")
 
@@ -31,19 +35,51 @@ app.add_middleware(
 
 
 @app.get("/api/search")
-def search_pelerin(passeport: str, session: Session = Depends(get_session)):
-    if not passeport or len(passeport.strip()) < 2:
-        raise HTTPException(status_code=400, detail="Numéro de passeport trop court")
+def search_pelerin(
+    q: Optional[str] = None,
+    passeport: Optional[str] = None,
+    session: Session = Depends(get_session),
+):
+    """Recherche un pèlerin par passeport, nom ou prénom (insensible à la casse).
 
-    # Exclut les pèlerins marqués comme masqués
-    query = select(Pelerin).where(
-        Pelerin.numero_passeport.ilike(f"%{passeport.strip()}%"),
-        Pelerin.masque == False,  # noqa: E712 (SQLAlchemy boolean compare)
+    - `q` : chaîne libre cherchée dans nom OR prénom OR numero_passeport
+    - `passeport` : conservé pour rétrocompatibilité (cherche uniquement dans numero_passeport)
+    """
+    term = (q or passeport or "").strip()
+    if len(term) < 2:
+        raise HTTPException(
+            status_code=400,
+            detail="Saisissez au moins 2 caractères (nom, prénom ou numéro de passeport)",
+        )
+
+    pattern = f"%{term}%"
+    if q is not None:
+        # Recherche large : nom OR prénom OR passeport
+        condition = or_(
+            Pelerin.numero_passeport.ilike(pattern),
+            Pelerin.nom.ilike(pattern),
+            Pelerin.prenom.ilike(pattern),
+        )
+    else:
+        # Mode legacy : passeport uniquement
+        condition = Pelerin.numero_passeport.ilike(pattern)
+
+    # Exclut les pèlerins marqués comme masqués + ordonne par nom puis prénom
+    query = (
+        select(Pelerin)
+        .where(condition, Pelerin.masque == False)  # noqa: E712
+        .order_by(Pelerin.nom, Pelerin.prenom)
+        .limit(MAX_RESULTS + 1)  # +1 pour détecter le débordement
     )
-    results = session.exec(query).all()
+    rows = session.exec(query).all()
+
+    truncated = len(rows) > MAX_RESULTS
+    results = rows[:MAX_RESULTS]
 
     return {
         "count": len(results),
+        "truncated": truncated,
+        "max_results": MAX_RESULTS,
         "results": [
             {
                 "nom": r.nom,
